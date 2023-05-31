@@ -1,0 +1,130 @@
+
+  if (!showRegisterTimeModal) {
+    return null;
+  }
+
+  return (
+    <div className='primaryModal subModal registerTimeModal' ref={contentRef}>
+      <button className='primary_modal_exit_button' onClick={handleModalClose}>
+        X
+      </button>
+      <div className="modal-container">
+        <h2 className='primary_modal_header'>Daglig registrering for {selectedMachine.name}</h2>
+        <form onSubmit={handleSubmit}>
+          <div className="custom-grid-static">
+            <Col numColSpanLg={4}>
+              <Card className='select-porder-card'>
+                <div className='register-time-form-inner-container center-and-equal-size'>
+                  <div className='select-p-order-container'>
+                    <Text className='input-field-header'>P-Ordre nummer</Text>
+                    <SelectBox
+                      className='p-order-dropdown'
+                      required
+                      value={selectedPOrder}
+                      onValueChange={(pOrder) => {
+                        setSelectedPOrder(pOrder);
+                        inputIsGiven(pOrder, setIsPOrderChosen);
+                      }}
+                    >
+                      {filteredPOrders.length ? (
+                        filteredPOrders.map((item) => (
+                          <SelectBoxItem className='select-p-order' key={item.P_Order} value={item.P_Order} text={item.P_Order.toString()} />
+                        ))
+                      ) : (
+                        <SelectBoxItem className='select-p-order' disabled text={"Ingen P-Ordre oprettet på denne maskine"} />
+                      )}
+                    </SelectBox>
+                  </div>
+                  <div className='register-time-form-inner-container'>
+                    <Text className='input-field-header'>Dato</Text>
+                    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={'da'}>
+                      <DatePicker
+                        label="Dato for registrering"
+                        format="DD/MM/YYYY"
+                        value={dateSelected}
+                        onChange={(value) => {
+                          setDateSelected(value);
+                        }}
+                      />
+                    </LocalizationProvider>
+                  </div>
+                </div>
+              </Card>
+            </Col>
+            <Col numColSpanLg={4}>
+              <Card className='select-porder-card'>
+                <div className='register-time-form-inner-container center-and-equal-size'>
+                  <div className='register-time-form-inner-container'>
+                    <Text className='input-field-header'>Skift</Text>
+                    <Dropdown
+                      value={shift}
+                      onValueChange={(value) => {
+                        setShift(value);
+                        inputIsGiven(value, setIsShiftChosen);
+                      }}>
+                      <DropdownItem value="Daghold" text={"Daghold"} />
+                      <DropdownItem value="Aftenhold" text={"Aftenhold"} />
+                      <DropdownItem value="Nathold" text={"Nathold"} />
+                    </Dropdown>
+                  </div>
+                </div>
+              </Card>
+            </Col>
+            <Col numColSpanLg={2}>
+              <Card>
+                <div className='register-time-form-inner-container'>
+                  <Text className='input-field-header'>Antal Produceret</Text>
+                  {producedInputComponent}
+                </div>
+              </Card>
+            </Col>
+            <Col numColSpanLg={2}>
+              <Card>
+                <div className='register-time-form-inner-container'>
+                  <Text className='input-field-header'>Antal Kasseret</Text>
+                  {discardedInputComponent}
+                </div>
+              </Card>
+            </Col>
+            <Col numColSpanLg={4}>
+              <Card>
+                <div className='register-time-form-inner-container'>
+                  <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={'da'}>
+                    {productionTimeComponent}
+                  </LocalizationProvider>
+                </div>
+              </Card>
+            </Col>
+          </div>
+          {renderStops()}
+          <Text className='stop-registration'>
+            Tilføj stop
+          </Text>
+          <div className='add-stop-container' ref={refAddStopButton}>
+            <AddCircleIcon
+              className='add-stop-icon'
+              sx={{ fontSize: '45px' }}
+              onClick={addStop}
+            />
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '70px' }}>
+            <div>
+              <Button size="xl" variant="primary" disabled={!(isPOrderChosen && isShiftChosen && allStopsHaveReason())}>
+                Registrer
+              </Button>
+            </div>
+            <div style={{ marginLeft: '20px', marginBottom: '30px' }}>
+              <Button size="xl" variant="secondary" onClick={handleCancelClick}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </form>
+        <ErrorModal showModal={showErrorModal} closeModal={handleErrorModalClose} />
+        <SuccessModal showModal={showSuccessModal} closeModal={handleSuccessModalClose} />
+      </div>
+    </div>
+  );
+}
+
+export default RegisterTimeModal;
